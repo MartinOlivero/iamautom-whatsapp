@@ -31,27 +31,30 @@ export async function procesar(env: Env, evento: Evento): Promise<void> {
   const enviar = (texto: string) => enviarTexto(env, charla, evento.accountId, texto, evento.eventId);
   if (accion === "pedir_texto") return enviar(TEXTO_FOTO);
 
-  let texto = evento.texto;
-  if (accion === "transcribir") {
-    const audio = evento.adjuntos.find((a) => a.tipo === "audio")!;
-    const datos = await bajarAdjunto(env, audio.url);
-    const transcripcion = datos && (await transcribir(env, datos));
-    if (!transcripcion) return enviar(TEXTO_AUDIO_FALLIDO);
-    texto = transcripcion;
-  }
-
-  let r;
   try {
-    r = await responder(env, sistema, await historial(env.DB, charla), texto);
-  } catch (e) {
-    // Sin IA (sin crédito, caída, etc.): el cliente no queda en silencio y la charla pasa a una persona.
-    console.error("Falló la IA:", e);
-    await enviar(TEXTO_FALLA_IA);
-    return pausar(env.DB, charla, ahora + horasPausa(env));
-  }
+    let texto = evento.texto;
+    if (accion === "transcribir") {
+      const audio = evento.adjuntos.find((a) => a.tipo === "audio")!;
+      const datos = await bajarAdjunto(env, audio.url);
+      const transcripcion = datos && (await transcribir(env, datos));
+      if (!transcripcion) return await enviar(TEXTO_AUDIO_FALLIDO);
+      texto = transcripcion;
+    }
 
-  await enviar(r.texto);
-  await guardar(env.DB, charla, "user", texto);
-  await guardar(env.DB, charla, "assistant", r.texto);
-  if (r.pasarAHumano) await pausar(env.DB, charla, ahora + horasPausa(env));
+    const r = await responder(env, sistema, await historial(env.DB, charla), texto);
+    await enviar(r.texto);
+    await guardar(env.DB, charla, "user", texto);
+    await guardar(env.DB, charla, "assistant", r.texto);
+    if (r.pasarAHumano) await pausar(env.DB, charla, ahora + horasPausa(env));
+  } catch (e) {
+    // Algo falló (IA sin crédito o caída, demora, red, Zernio): el cliente no queda en silencio y
+    // la charla pasa a una persona. Primero se pausa, así queda pausada aunque el aviso no salga.
+    console.error("Falló el procesamiento:", e);
+    await pausar(env.DB, charla, ahora + horasPausa(env));
+    try {
+      await enviar(TEXTO_FALLA_IA);
+    } catch (e2) {
+      console.error("Tampoco se pudo avisar al cliente:", e2);
+    }
+  }
 }

@@ -10,3 +10,8 @@ test("sólo pasan las claves del bot; MODO y el modelo de prueba nunca llegan a 
 test("falla si falta una clave obligatoria", () => {
   assert.throws(() => secretosParaProduccion("OPENROUTER_API_KEY=or\nZERNIO_API_KEY=zk\n"), /ZERNIO_WEBHOOK_SECRET/);
 });
+
+test("un .dev.vars con finales de línea de Windows (\\r\\n) no sube el \\r pegado a la clave", () => {
+  const devVars = "OPENROUTER_API_KEY=or\r\nZERNIO_API_KEY=zk\r\nZERNIO_WEBHOOK_SECRET=s\r\n";
+  assert.deepEqual(secretosParaProduccion(devVars), { OPENROUTER_API_KEY: "or", ZERNIO_API_KEY: "zk", ZERNIO_WEBHOOK_SECRET: "s" });
+});

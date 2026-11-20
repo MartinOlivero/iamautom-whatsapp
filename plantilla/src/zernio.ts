@@ -3,6 +3,7 @@
 // (leerEvento) y le entrega las respuestas (enviarTexto).
 
 import type { Env } from "./index";
+import { PLAZOS } from "./plazos";
 
 const API = "https://zernio.com/api/v1";
 
@@ -53,8 +54,19 @@ export async function enviarTexto(env: Env, conversationId: string, accountId: s
   if (!r.ok) throw new Error(`Zernio respondió ${r.status} al enviar: ${await r.text()}`);
 }
 
-// Baja un audio o archivo. Devuelve null si ya no está disponible (Meta lo borra después de un tiempo).
+// Una nota de voz de WhatsApp pesa ~4 KB por segundo: 1 MB son varios minutos. Más que eso no se
+// transcribe, para no pasarse del tiempo de CPU del plan gratis de Cloudflare.
+export const MAX_AUDIO = 1_000_000;
+
+// Baja un audio o archivo. Devuelve null si no se pudo (Meta lo borra después de un tiempo,
+// falló la red o es demasiado grande).
 export async function bajarAdjunto(env: Env, url: string): Promise<ArrayBuffer | null> {
-  const r = await fetch(url, { headers: { Authorization: `Bearer ${env.ZERNIO_API_KEY}` } });
-  return r.ok ? r.arrayBuffer() : null;
+  try {
+    const r = await fetch(url, { headers: { Authorization: `Bearer ${env.ZERNIO_API_KEY}` }, signal: AbortSignal.timeout(PLAZOS.bajarAudio) });
+    if (!r.ok) return null;
+    const datos = await r.arrayBuffer();
+    return datos.byteLength > MAX_AUDIO ? null : datos;
+  } catch {
+    return null;
+  }
 }

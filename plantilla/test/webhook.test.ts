@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeAll, beforeEach, afterEach } from "vitest";
 import { env, applyD1Migrations, createExecutionContext, waitOnExecutionContext } from "cloudflare:test";
 import worker from "../src/index";
+import { PLAZOS } from "../src/plazos";
 import { pausadaHasta, pausar } from "../src/memoria";
 import base from "./fixtures/recibido-texto.json";
 import voz from "./fixtures/recibido-nota-de-voz.json";
@@ -40,22 +41,32 @@ async function llamar(payload: any, opciones: { firma?: string; ruta?: string; e
 // Simula a OpenRouter, Zernio y la descarga de audios. Guarda lo que se le mandó a Zernio.
 let enviados: { url: string; body: any; idem: string | null }[];
 let iaResponde: () => Response;
-let audioResponde: () => Response;
+let audioResponde: () => Response | Promise<Response>;
+let transcripcionResponde: () => Response;
+let zernioFalla = false;
+// Un servidor que nunca contesta: sólo se corta si el pedido trae un plazo (signal).
+const cuelga = (init: any) => new Promise<Response>((_, rechazar) => init?.signal?.addEventListener("abort", () => rechazar(init.signal.reason)));
+const CUELGA = new Response("cuelga");
 const okIA = (t: string) => new Response(JSON.stringify({ choices: [{ message: { content: t } }] }));
 
 beforeEach(() => {
   enviados = [];
   iaResponde = () => okIA("¡Hola! Abrimos a las 19.");
   audioResponde = () => new Response(new Uint8Array([1, 2, 3]));
+  transcripcionResponde = () => okIA("quiero una muzza");
+  zernioFalla = false;
+  Object.assign(PLAZOS, { bajarAudio: 50, transcribir: 50, responder: 50 });
   vi.spyOn(globalThis, "fetch").mockImplementation(async (entrada: any, init?: any) => {
     const url = String(entrada instanceof Request ? entrada.url : entrada);
     if (url.startsWith("https://openrouter.ai/")) {
       const body = JSON.parse(init.body);
-      if (body.model === env.MODELO_AUDIO) return okIA("quiero una muzza");
-      return iaResponde();
+      if (body.model === env.MODELO_AUDIO) return transcripcionResponde();
+      const r = iaResponde();
+      return r === CUELGA ? cuelga(init) : r;
     }
     if (url.includes("/whatsapp/media/")) return audioResponde();
     if (url.includes("/inbox/conversations/")) {
+      if (zernioFalla) throw new TypeError("Network connection lost");
       enviados.push({ url, body: JSON.parse(init.body), idem: new Headers(init.headers).get("idempotency-key") });
       return new Response('{"success":true}');
     }
@@ -132,6 +143,53 @@ describe("POST /webhook", () => {
     const p = evento(base);
     await llamar(p);
     expect(enviados.map((e) => e.body.message)).toEqual(["Te paso con Marcela."]);
+    expect(await pausadaHasta(env.DB, p.message.conversationId)).toBeGreaterThan(Date.now());
+  });
+
+  it("la IA no contesta nunca (timeout) → avisa que responde una persona y pausa", async () => {
+    iaResponde = () => CUELGA;
+    const p = evento(base);
+    await llamar(p);
+    expect(enviados.map((e) => e.body.message)).toEqual(["En un momento te responde una persona del equipo."]);
+    expect(await pausadaHasta(env.DB, p.message.conversationId)).toBeGreaterThan(Date.now());
+  });
+
+  it("error de red al bajar el audio → pide que lo escriba", async () => {
+    audioResponde = () => { throw new TypeError("Network connection lost"); };
+    await llamar(evento(voz));
+    expect(enviados.map((e) => e.body.message)).toEqual(["No pude escuchar el audio. ¿Me lo puedes escribir?"]);
+  });
+
+  it("audio de más de 1 MB → pide que lo escriba sin mandarlo a la IA", async () => {
+    audioResponde = () => new Response(new Uint8Array(1_000_001));
+    let transcripciones = 0;
+    transcripcionResponde = () => { transcripciones++; return okIA("x"); };
+    await llamar(evento(voz));
+    expect(transcripciones).toBe(0);
+    expect(enviados.map((e) => e.body.message)).toEqual(["No pude escuchar el audio. ¿Me lo puedes escribir?"]);
+  });
+
+  it("la IA de audio no está disponible (402) → avisa que responde una persona y pausa", async () => {
+    transcripcionResponde = () => new Response("{}", { status: 402 });
+    const p = evento(voz);
+    await llamar(p);
+    expect(enviados.map((e) => e.body.message)).toEqual(["En un momento te responde una persona del equipo."]);
+    expect(await pausadaHasta(env.DB, p.message.conversationId)).toBeGreaterThan(Date.now());
+  });
+
+  it("la IA y Zernio fallan a la vez → la charla igual queda pausada", async () => {
+    iaResponde = () => new Response("{}", { status: 500 });
+    zernioFalla = true;
+    const p = evento(base);
+    await llamar(p);
+    expect(await pausadaHasta(env.DB, p.message.conversationId)).toBeGreaterThan(Date.now());
+  });
+
+  it("la marca [[HUMANO]] en el medio → no se le muestra al cliente y pausa", async () => {
+    iaResponde = () => okIA("Entiendo. [[HUMANO]] Te paso con Marcela.");
+    const p = evento(base);
+    await llamar(p);
+    expect(enviados.map((e) => e.body.message)).toEqual(["Entiendo. Te paso con Marcela."]);
     expect(await pausadaHasta(env.DB, p.message.conversationId)).toBeGreaterThan(Date.now());
   });
 });

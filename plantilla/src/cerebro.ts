@@ -3,6 +3,7 @@
 // leyendo la charla y contestando según ese manual.
 
 import type { Env } from "./index";
+import { PLAZOS } from "./plazos";
 import type { Turno } from "./memoria";
 
 const URL_OPENROUTER = "https://openrouter.ai/api/v1/chat/completions";
@@ -35,8 +36,13 @@ function elegirModelo(texto: string): { model: string } | { models: string[] } {
   return lista.length > 1 ? { models: lista.slice(0, 3) } : { model: lista[0] };
 }
 
-async function preguntar(env: Env, modelo: string, messages: unknown[]): Promise<string> {
+// La IA contestó pero no dijo nada: no es una caída, es que no entendió.
+export class RespuestaVacia extends Error {}
+
+async function preguntar(env: Env, modelo: string, messages: unknown[], plazo: number): Promise<string> {
   const r = await fetch(URL_OPENROUTER, {
+    // Sin plazo, un modelo que no contesta dejaría al cliente sin respuesta (Cloudflare corta a los ~30 s).
+    signal: AbortSignal.timeout(plazo),
     method: "POST",
     headers: {
       Authorization: `Bearer ${env.OPENROUTER_API_KEY}`,
@@ -48,7 +54,7 @@ async function preguntar(env: Env, modelo: string, messages: unknown[]): Promise
   if (!r.ok) throw new Error(`OpenRouter respondió ${r.status}: ${await r.text()}`);
   const datos: any = await r.json();
   const texto = datos?.choices?.[0]?.message?.content;
-  if (typeof texto !== "string" || !texto.trim()) throw new Error("OpenRouter devolvió una respuesta vacía");
+  if (typeof texto !== "string" || !texto.trim()) throw new RespuestaVacia("OpenRouter devolvió una respuesta vacía");
   return texto.trim();
 }
 
@@ -57,12 +63,15 @@ export async function responder(env: Env, sistema: string, historial: Turno[], t
     { role: "system", content: sistema },
     ...historial.map((t) => ({ role: t.rol, content: t.texto })),
     { role: "user", content: texto },
-  ]);
-  const pasarAHumano = respuesta.startsWith(MARCA_HUMANO);
-  return { texto: pasarAHumano ? respuesta.slice(MARCA_HUMANO.length).trim() : respuesta, pasarAHumano };
+  ], PLAZOS.responder);
+  // La marca puede venir en cualquier parte: se saca siempre para que el cliente nunca la vea.
+  const pasarAHumano = respuesta.includes(MARCA_HUMANO);
+  return { texto: respuesta.split(MARCA_HUMANO).map((t) => t.trim()).filter(Boolean).join(" "), pasarAHumano };
 }
 
-// Convierte una nota de voz de WhatsApp (ogg) en texto. null si no se pudo.
+// Convierte una nota de voz de WhatsApp (ogg) en texto.
+// null = la IA no la entendió (se le pide que lo escriba). Si la IA no está disponible
+// (sin crédito, caída, demora) lanza un error, y el mensaje pasa a una persona.
 export async function transcribir(env: Env, audio: ArrayBuffer): Promise<string | null> {
   try {
     return await preguntar(env, env.MODELO_AUDIO, [
@@ -73,9 +82,10 @@ export async function transcribir(env: Env, audio: ArrayBuffer): Promise<string 
           { type: "input_audio", input_audio: { data: aBase64(audio), format: "ogg" } },
         ],
       },
-    ]);
-  } catch {
-    return null;
+    ], PLAZOS.transcribir);
+  } catch (e) {
+    if (e instanceof RespuestaVacia) return null;
+    throw e;
   }
 }
 

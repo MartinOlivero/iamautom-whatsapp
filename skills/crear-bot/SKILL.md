@@ -28,7 +28,7 @@ Tu trabajo es copiar la plantilla, cargar los datos del negocio, conectar las cu
    - La herramienta y el hosting (Cloudflare): **gratis**.
    - La IA (OpenRouter): probar es **gratis**; para atender clientes reales hay que cargar crédito
      (**US$ 10 alcanzan para empezar**; OpenRouter cobra 5,5 % al cargar). Cada respuesta cuesta fracciones de centavo.
-   - WhatsApp: Meta da **1.000 respuestas gratis por mes** por número; Zernio conecta **2 cuentas gratis**.
+   - WhatsApp: Meta cobra según la tarifa de su país (las respuestas a clientes tienen un cupo gratuito); Zernio conecta **2 cuentas gratis**.
    - Va a necesitar: una cuenta de **OpenRouter**, una de **Cloudflare**, una de **Zernio**, y su número en la app **WhatsApp Business** (no el WhatsApp normal).
 
 ## Paso 2 — Entrevista
@@ -101,8 +101,8 @@ Explica: "Ahora lo subimos a Cloudflare, que lo mantiene encendido las 24 horas,
 1. **Clave de Zernio** (la única que se copia a mano). Guíalo:
    "Entra a https://zernio.com y crea tu cuenta. Ve a **Settings → API Keys** (https://zernio.com/dashboard/api-keys),
    toca **Create**, copia la clave y pégamela aquí. La guardo en tu computadora y no la vuelvo a mostrar."
-   Guárdala con una sola línea, sin imprimirla:
-   `node -e "import('PLUGIN/scripts/lib/dev-vars.mjs').then(m=>m.guardarVariable(process.argv[1],'ZERNIO_API_KEY',process.argv[2]))" BOT '<clave>'`
+   Guárdala sin imprimirla, pasándola por la entrada (así no queda en la lista de procesos y anda en Windows):
+   `printf '%s' '<clave>' | node PLUGIN/scripts/guardar-clave.mjs --carpeta BOT --nombre ZERNIO_API_KEY`
 2. `npx wrangler deploy` → anota la URL `https://<name>.<subdominio>.workers.dev`.
 3. `node PLUGIN/scripts/zernio.mjs webhook <URL> --carpeta BOT`
 4. `node PLUGIN/scripts/publicar-secretos.mjs --carpeta BOT` (sube sólo las 3 claves; **nunca** `MODO`).

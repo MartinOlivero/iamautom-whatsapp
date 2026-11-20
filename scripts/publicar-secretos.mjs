@@ -11,7 +11,7 @@ const OBLIGATORIAS = ["OPENROUTER_API_KEY", "ZERNIO_API_KEY", "ZERNIO_WEBHOOK_SE
 
 export function secretosParaProduccion(devVars) {
   const todas = Object.fromEntries(
-    devVars.split("\n").filter((l) => l.includes("=")).map((l) => [l.slice(0, l.indexOf("=")), l.slice(l.indexOf("=") + 1)]),
+    devVars.split("\n").filter((l) => l.includes("=")).map((l) => [l.slice(0, l.indexOf("=")), l.slice(l.indexOf("=") + 1).trim()]), // trim: finales de línea de Windows
   );
   const faltan = OBLIGATORIAS.filter((k) => !todas[k]);
   if (faltan.length) throw new Error(`Faltan estas claves en .dev.vars: ${faltan.join(", ")}`);

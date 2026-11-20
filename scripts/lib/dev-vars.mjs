@@ -14,5 +14,6 @@ export async function guardarVariable(carpeta, nombre, valor) {
 export async function leerVariable(carpeta, nombre) {
   const actual = await readFile(join(carpeta, ".dev.vars"), "utf8").catch(() => "");
   const linea = actual.split("\n").find((l) => l.startsWith(`${nombre}=`));
-  return linea ? linea.slice(nombre.length + 1) : undefined;
+  // .trim(): si el archivo se editó en Windows, cada línea termina en "\r" y la clave no serviría.
+  return linea ? linea.slice(nombre.length + 1).trim() : undefined;
 }

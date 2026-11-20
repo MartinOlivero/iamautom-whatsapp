@@ -64,8 +64,12 @@ describe("transcribir", () => {
     const parte = body.messages[0].content.find((p: any) => p.type === "input_audio");
     expect(parte.input_audio).toEqual({ data: "AQID", format: "ogg" });
   });
-  it("si falla devuelve null", async () => {
+  it("la IA no está disponible (500) → lanza error, para pasar a una persona", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("x", { status: 500 }));
+    await expect(transcribir(env, new ArrayBuffer(1))).rejects.toThrow();
+  });
+  it("la IA contesta vacío (no entendió el audio) → null, para pedir que lo escriba", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(ok(""));
     expect(await transcribir(env, new ArrayBuffer(1))).toBeNull();
   });
 });
