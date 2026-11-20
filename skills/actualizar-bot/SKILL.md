@@ -13,6 +13,8 @@ Mismo trato que `/crear-bot`: español neutro de "tú", una pregunta por vez, si
 2. **¿Qué cambió?** Puede pasar un archivo nuevo (lista de precios, menú) o contarlo.
 3. Actualiza `config/conocimiento.md` y/o `config/negocio.json`. Con un archivo nuevo, reemplaza **sólo** la sección
    que corresponde y respeta los precios tal cual. Muéstrale el antes y el después de lo que cambió.
-4. **Pruébalo en la computadora** antes de publicar: `.dev.vars` tiene que tener `MODO=local`; inicia `npx wrangler dev`
+4. **Pruébalo en la computadora** antes de publicar: `.dev.vars` tiene que tener `MODO=local`; ejecuta
+   `npx wrangler d1 migrations apply DB --local` (la base de prueba local depende del `database_id`, que cambió al
+   publicar; si ya está creada no hace nada) e inicia `npx wrangler dev`
    y que pregunte por lo que cambió (`node PLUGIN/scripts/chat-local.mjs`). Detén `wrangler dev`.
 5. Con su OK: `npx wrangler deploy`. Confírmale: "Listo, desde ahora tu bot responde con la información nueva."
