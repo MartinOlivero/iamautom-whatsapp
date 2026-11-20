@@ -89,7 +89,7 @@ describe("POST /webhook", () => {
     iaResponde = () => new Response("{}", { status: 402 });
     const p = evento(base);
     await llamar(p);
-    expect(enviados.map((e) => e.body.message)).toEqual(["En un ratito te responde una persona del equipo."]);
+    expect(enviados.map((e) => e.body.message)).toEqual(["En un momento te responde una persona del equipo."]);
     expect(await pausadaHasta(env.DB, p.message.conversationId)).toBeGreaterThan(Date.now());
   });
 
@@ -101,12 +101,12 @@ describe("POST /webhook", () => {
   it("audio que ya no se puede bajar → pide que lo escriba", async () => {
     audioResponde = () => new Response("expirado", { status: 400 });
     await llamar(evento(voz));
-    expect(enviados.map((e) => e.body.message)).toEqual(["No pude escuchar el audio. ¿Me lo escribís?"]);
+    expect(enviados.map((e) => e.body.message)).toEqual(["No pude escuchar el audio. ¿Me lo puedes escribir?"]);
   });
 
   it("foto sin texto → pide que lo escriba", async () => {
     await llamar(evento(base, (p) => { p.message.text = null; p.message.attachments = [{ type: "image", url: "https://x/y" }]; }));
-    expect(enviados.map((e) => e.body.message)).toEqual(["Por ahora no puedo ver fotos ni stickers. ¿Me lo escribís?"]);
+    expect(enviados.map((e) => e.body.message)).toEqual(["Por ahora no puedo ver fotos ni stickers. ¿Me lo puedes escribir?"]);
   });
 
   it("el dueño contesta desde el celular → la charla queda pausada 12 h y el bot se calla", async () => {

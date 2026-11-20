@@ -158,7 +158,7 @@ porque Node ya hace falta para la herramienta de Cloudflare. Se prueba en Mac; W
 cubre por diseño y queda como riesgo hasta probarlo en una máquina real.
 
 ### Marca y tono
-- Todo en español. **Llamada de Tincho:** voseo rioplatense, la voz de la marca.
+- Todo en **español neutro, de "tú"**, sin regionalismos (decidido por Tincho el 20/11: lo puede usar gente de cualquier país).
 - Branding iamautom (paleta cobre/tinta/verde de iamautom.com, nada de violeta) en el README
   y en cualquier página del repo.
 - Si Tincho es aprobado en el programa de afiliados de Zernio, su link va en el README.

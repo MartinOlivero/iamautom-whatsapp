@@ -28,7 +28,7 @@ for (const modelo of modelos) {
       model: modelo,
       usage: { include: true },
       messages: [{ role: "user", content: [
-        { type: "text", text: "Transcribí este audio en español tal cual se dice. Devolvé sólo la transcripción." },
+        { type: "text", text: "Transcribe este audio en español tal cual se dice. Devuelve sólo la transcripción." },
         { type: "input_audio", input_audio: { data: audio, format: "ogg" } },
       ] }],
     }),

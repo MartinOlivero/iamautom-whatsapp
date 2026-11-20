@@ -34,8 +34,8 @@ const servidor = createServer(async (req, res) => {
   console.log("Llegó la respuesta de OpenRouter.");
   if (!code) {
     // Un pedido sin código no cierra el receptor: el usuario puede seguir autorizando.
-    res.writeHead(400, { "Content-Type": "text/html; charset=utf-8" }).end(pagina("No se autorizó", "Volvé a la pestaña de OpenRouter y tocá «Authorize»."));
-    if (url.searchParams.has("error")) terminar(1, "Cancelaste la autorización en OpenRouter. Volvé a correr el comando.");
+    res.writeHead(400, { "Content-Type": "text/html; charset=utf-8" }).end(pagina("No se autorizó", "Vuelve a la pestaña de OpenRouter y toca «Authorize»."));
+    if (url.searchParams.has("error")) terminar(1, "Cancelaste la autorización en OpenRouter. Vuelve a ejecutar el comando.");
     return;
   }
   try {
@@ -47,10 +47,10 @@ const servidor = createServer(async (req, res) => {
     const datos = await r.json();
     if (!r.ok || !datos.key) throw new Error(`OpenRouter respondió ${r.status}`);
     await guardarVariable(carpeta, "OPENROUTER_API_KEY", datos.key);
-    res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" }).end(pagina("¡Listo!", "OpenRouter quedó conectado. Ya podés cerrar esta pestaña y volver a la terminal."));
+    res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" }).end(pagina("¡Listo!", "OpenRouter quedó conectado. Ya puedes cerrar esta pestaña y volver a la terminal."));
     terminar(0, `Listo: OpenRouter conectado (tope de gasto: US$ ${limite}).`);
   } catch (e) {
-    res.writeHead(500, { "Content-Type": "text/html; charset=utf-8" }).end(pagina("Algo falló", "Volvé a la terminal y probá de nuevo."));
+    res.writeHead(500, { "Content-Type": "text/html; charset=utf-8" }).end(pagina("Algo falló", "Vuelve a la terminal e inténtalo de nuevo."));
     terminar(1, `No se pudo obtener la clave: ${e.message}`);
   }
 });
@@ -71,8 +71,8 @@ servidor.listen(0, () => {
   auth.searchParams.set("code_challenge_method", "S256");
   auth.searchParams.set("limit", String(limite));
   auth.searchParams.set("key_label", "iamautom-whatsapp");
-  console.log("Se abrió tu navegador. Entrá a OpenRouter y tocá «Authorize».");
-  console.log(`Si no se abrió, copiá este link:\n${auth}`);
+  console.log("Se abrió tu navegador. Entra a OpenRouter y toca «Authorize».");
+  console.log(`Si no se abrió, copia este enlace:\n${auth}`);
   abrir(auth.toString());
-  setTimeout(() => terminar(1, "Pasaron 10 minutos sin autorizar. Volvé a correr el comando."), DIEZ_MINUTOS).unref();
+  setTimeout(() => terminar(1, "Pasaron 10 minutos sin autorizar. Vuelve a ejecutar el comando."), DIEZ_MINUTOS).unref();
 });

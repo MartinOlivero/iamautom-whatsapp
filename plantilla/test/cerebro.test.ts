@@ -16,7 +16,7 @@ describe("armarSistema", () => {
     expect(s).toContain("Muzzarella: $ 12.000");
   });
   it("prohíbe inventar", () => {
-    expect(s).toContain("Si un dato no está en la información del negocio, decí que no lo tenés y ofrecé pasar con una persona. Nunca inventes precios, stock ni promesas.");
+    expect(s).toContain("Si un dato no está en la información del negocio, di que no lo tienes y ofrece pasar con una persona. Nunca inventes precios, stock ni promesas.");
   });
   it("explica la marca para pasar a una persona", () => {
     expect(s).toContain("[[HUMANO]]");
@@ -67,5 +67,13 @@ describe("transcribir", () => {
   it("si falla devuelve null", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("x", { status: 500 }));
     expect(await transcribir(env, new ArrayBuffer(1))).toBeNull();
+  });
+});
+
+describe("idioma", () => {
+  it("pide español neutro, sin voseo ni regionalismos", () => {
+    const s = armarSistema(negocio, "x");
+    expect(s).toContain("Responde en español neutro (de tú, sin regionalismos)");
+    expect(s).not.toMatch(/\b(Sos|Respondé|decí|tenés|ofrecé|empezá|avisale|Usá)\b/);
   });
 });

@@ -12,15 +12,15 @@ export type Negocio = { nombre: string; rubro: string; nombreBot: string; tono: 
 
 export function armarSistema(n: Negocio, conocimiento: string): string {
   return [
-    `Sos ${n.nombreBot}, quien atiende el WhatsApp de ${n.nombre} (${n.rubro}).`,
-    `Tono: ${n.tono}. Respondé en español, con mensajes cortos como en un chat.`,
+    `Eres ${n.nombreBot}, quien atiende el WhatsApp de ${n.nombre} (${n.rubro}).`,
+    `Tono: ${n.tono}. Responde en español neutro (de tú, sin regionalismos), con mensajes cortos como en un chat.`,
     `Horario de atención: ${n.horario}`,
     "",
     "Reglas:",
-    "- Usá sólo la información del negocio que está abajo.",
-    "- Si un dato no está en la información del negocio, decí que no lo tenés y ofrecé pasar con una persona. Nunca inventes precios, stock ni promesas.",
-    `- Si el cliente pide hablar con una persona, está enojado, o hace falta algo que no podés resolver, empezá tu respuesta con ${MARCA_HUMANO} y avisale que lo pasás con ${n.contactoHumano}.`,
-    "- No digas que sos una IA salvo que te lo pregunten; si te lo preguntan, decí la verdad.",
+    "- Usa sólo la información del negocio que está abajo.",
+    "- Si un dato no está en la información del negocio, di que no lo tienes y ofrece pasar con una persona. Nunca inventes precios, stock ni promesas.",
+    `- Si el cliente pide hablar con una persona, está molesto, o hace falta algo que no puedes resolver, empieza tu respuesta con ${MARCA_HUMANO} y avísale que lo pasas con ${n.contactoHumano}.`,
+    "- No digas que eres una IA salvo que te lo pregunten; si te lo preguntan, di la verdad.",
     "",
     "Información del negocio:",
     conocimiento,
@@ -61,7 +61,7 @@ export async function transcribir(env: Env, audio: ArrayBuffer): Promise<string 
       {
         role: "user",
         content: [
-          { type: "text", text: "Transcribí este audio en español tal cual se dice. Devolvé sólo la transcripción." },
+          { type: "text", text: "Transcribe este audio en español tal cual se dice. Devuelve sólo la transcripción." },
           { type: "input_audio", input_audio: { data: aBase64(audio), format: "ogg" } },
         ],
       },

@@ -9,9 +9,9 @@ import { armarSistema, responder, transcribir, type Negocio } from "./cerebro";
 import negocio from "../config/negocio.json";
 import conocimiento from "../config/conocimiento.md";
 
-export const TEXTO_FALLA_IA = "En un ratito te responde una persona del equipo.";
-export const TEXTO_FOTO = "Por ahora no puedo ver fotos ni stickers. ¿Me lo escribís?";
-export const TEXTO_AUDIO_FALLIDO = "No pude escuchar el audio. ¿Me lo escribís?";
+export const TEXTO_FALLA_IA = "En un momento te responde una persona del equipo.";
+export const TEXTO_FOTO = "Por ahora no puedo ver fotos ni stickers. ¿Me lo puedes escribir?";
+export const TEXTO_AUDIO_FALLIDO = "No pude escuchar el audio. ¿Me lo puedes escribir?";
 
 export const sistema = armarSistema(negocio as Negocio, conocimiento);
 

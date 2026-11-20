@@ -55,18 +55,18 @@ async function principal() {
   }
   const clave = await leerVariable(carpeta, "ZERNIO_API_KEY");
   if (!clave) {
-    console.error("No encuentro ZERNIO_API_KEY en .dev.vars. Primero cargá tu clave de Zernio.");
+    console.error("No encuentro ZERNIO_API_KEY en .dev.vars. Primero carga tu clave de Zernio.");
     process.exit(1);
   }
 
   if (comando === "sandbox") {
     const r = await llamar(clave, pedidoSandbox(valor));
-    console.log(`Te llegó un WhatsApp del número de prueba de Zernio (${r.sandboxNumber}). Respondelo con cualquier cosa.`);
+    console.log(`Te llegó un WhatsApp del número de prueba de Zernio (${r.sandboxNumber}). Respóndelo con cualquier cosa.`);
     for (let intento = 0; intento < 60; intento++) {
       await esperar(5000);
       const { sessions } = await llamar(clave, { metodo: "GET", ruta: "/whatsapp/sandbox/sessions" });
       if (sessions?.some((s) => s.status === "active")) {
-        console.log(`Listo: tu celular quedó activado. Escribile al ${r.sandboxNumber} para hablar con tu bot.`);
+        console.log(`Listo: tu celular quedó activado. Escríbele al ${r.sandboxNumber} para hablar con tu bot.`);
         return;
       }
     }
@@ -78,10 +78,10 @@ async function principal() {
     const perfiles = await llamar(clave, { metodo: "GET", ruta: "/profiles" });
     const perfil = (perfiles.profiles ?? perfiles.data ?? [])[0];
     const profileId = perfil?._id ?? perfil?.id;
-    if (!profileId) throw new Error("Tu cuenta de Zernio no tiene perfiles. Creá uno desde zernio.com.");
+    if (!profileId) throw new Error("Tu cuenta de Zernio no tiene perfiles. Crea uno desde zernio.com.");
     const { authUrl } = await llamar(clave, pedidoConectar(profileId));
-    console.log("Se abrió tu navegador. Seguí los pasos de Meta y escaneá el QR con la app WhatsApp Business.");
-    console.log(`Si no se abrió, copiá este link:\n${authUrl}`);
+    console.log("Se abrió tu navegador. Sigue los pasos de Meta y escanea el QR con la app WhatsApp Business.");
+    console.log(`Si no se abrió, copia este enlace:\n${authUrl}`);
     abrir(authUrl);
     return;
   }

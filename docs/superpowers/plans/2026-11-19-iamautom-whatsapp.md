@@ -13,7 +13,7 @@
 ## Global Constraints
 
 - **Escrito de cero.** Prohibido copiar texto o código de `Hainrixz/whatsapp-agentkit` (exige crédito en derivados). No abrir ese repo mientras se implementa.
-- Todo texto para el usuario y el cliente final: **español con voseo rioplatense**.
+- Todo texto para el usuario y el cliente final: **español neutro, de "tú", sin regionalismos** (cambio de Tincho, 20/11; antes decía voseo).
 - Ningún secreto en el repo: claves sólo en `.dev.vars` (en `.gitignore`) y en secretos de Cloudflare.
 - Scripts de apoyo en **Node puro** (`.mjs`, sin `npm install`), deben andar en macOS y Windows (nada de bash).
 - Zernio es el **único** proveedor en v1. Firma: HMAC-SHA256 hex en minúsculas del body crudo, header `X-Zernio-Signature`, comparación en tiempo constante. Dedup por `id` / `X-Zernio-Event-Id`.
