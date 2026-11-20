@@ -1,0 +1,12 @@
+{
+  "name": "iamautom-whatsapp",
+  "owner": { "name": "Martín Olivero / IamAutom", "url": "https://iamautom.com" },
+  "metadata": { "description": "Bot de WhatsApp con IA para tu negocio, gratis y guiado paso a paso por Claude Code." },
+  "plugins": [
+    {
+      "name": "iamautom-whatsapp",
+      "source": "./",
+      "description": "Te entrevista, arma tu bot de WhatsApp con IA, lo prueba con vos y lo publica gratis en Cloudflare. Comandos /crear-bot y /actualizar-bot."
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "name": "iamautom-whatsapp",
+  "version": "0.1.0",
+  "description": "Tu bot de WhatsApp con IA, armado por Claude Code y publicado gratis en Cloudflare. Te entrevista sobre tu negocio, lo prueba con vos y lo conecta a tu WhatsApp Business por Zernio. Entiende audios y pasa la charla a una persona cuando hace falta.",
+  "author": { "name": "Martín Olivero / IamAutom", "url": "https://iamautom.com" },
+  "homepage": "https://github.com/MartinOlivero/iamautom-whatsapp",
+  "repository": "https://github.com/MartinOlivero/iamautom-whatsapp",
+  "license": "MIT",
+  "keywords": ["claude-code", "claude-code-plugin", "whatsapp", "chatbot", "bot", "cloudflare-workers", "openrouter", "zernio", "pyme", "español"]
+}

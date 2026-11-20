@@ -1,0 +1,16 @@
+{
+  // Configuración del bot. La skill /crear-bot cambia name, database_name y database_id.
+  "name": "mi-bot-whatsapp",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-11-01",
+  "d1_databases": [
+    { "binding": "DB", "database_name": "mi-bot-whatsapp", "database_id": "00000000-0000-0000-0000-000000000000", "migrations_dir": "migraciones" }
+  ],
+  // Permite importar los archivos del negocio (config/*.md y *.json) como texto.
+  "rules": [{ "type": "Text", "globs": ["**/*.md"], "fallthrough": true }],
+  "vars": {
+    "MODELO_TEXTO": "anthropic/claude-haiku-5.5",
+    "MODELO_AUDIO": "__MODELO_AUDIO__",
+    "HORAS_PAUSA": "12"
+  }
+}
