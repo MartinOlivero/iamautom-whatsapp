@@ -108,8 +108,11 @@ Explica: "Ahora lo subimos a Cloudflare, que lo mantiene encendido las 24 horas,
 4. `node PLUGIN/scripts/publicar-secretos.mjs --carpeta BOT` (sube sólo las 3 claves; **nunca** `MODO`).
 5. Verifica `curl -s <URL>/` → `{"ok":true,...}`.
 6. **Prueba con el número de pruebas de Zernio** (gratis, 50 mensajes por día):
-   `node PLUGIN/scripts/zernio.mjs sandbox <su celular> --carpeta BOT`. Que responda el WhatsApp que le llega
-   y después le escriba al número de prueba: le tiene que contestar su bot.
+   pídele el número del celular **donde lee WhatsApp en la app** (su personal sirve). Un número conectado a
+   otra plataforma de WhatsApp (YCloud, Twilio, otro bot) no sirve: el mensaje de activación le llega a esa
+   plataforma y nadie lo ve.
+   `node PLUGIN/scripts/zernio.mjs sandbox <su celular> --carpeta BOT`. Que responda **en el chat del número
+   de pruebas** el WhatsApp que le llega y después le escriba a ese número: le tiene que contestar su bot.
 7. **Su número real**: confirma que usa la app **WhatsApp Business**. Explica que va a **seguir usando su app
    normalmente** y que el bot atiende al mismo tiempo. Si todavía tenía el modelo gratuito, pídele ahora que
    cargue crédito, vuelve `MODELO_TEXTO` a `anthropic/claude-haiku-5.5` y ejecuta `npx wrangler deploy`.
