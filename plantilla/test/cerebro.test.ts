@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { env } from "cloudflare:test";
 import { armarSistema, responder, transcribir } from "../src/cerebro";
-import negocio from "../config/negocio.ejemplo.json";
+import negocio from "../config/negocio.json";
 
 const ok = (contenido: string) =>
   new Response(JSON.stringify({ choices: [{ message: { content: contenido } }] }), { status: 200 });
