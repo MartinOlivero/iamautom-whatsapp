@@ -74,7 +74,8 @@ describe("idioma", () => {
   it("pide español neutro, sin voseo ni regionalismos", () => {
     const s = armarSistema(negocio, "x");
     expect(s).toContain("Responde en español neutro (de tú, sin regionalismos)");
-    expect(s).not.toMatch(/\b(Sos|Respondé|decí|tenés|ofrecé|empezá|avisale|Usá)\b/);
+    expect(s).toContain("Trata siempre al cliente de tú: nunca uses voseo (querés, tenés, podés) ni modismos locales, aunque el negocio esté en Argentina o el cliente los use.");
+    expect(s).not.toMatch(/\b(Sos|Respondé|decí|ofrecé|empezá|avisale|Usá)\b/);
   });
 });
 
