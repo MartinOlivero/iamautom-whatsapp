@@ -1,0 +1,14 @@
+{
+  "id": "evt_txt_1",
+  "event": "message.received",
+  "message": {
+    "id": "msg_1", "conversationId": "conv_1", "platform": "whatsapp", "platformMessageId": "wamid.1",
+    "direction": "incoming", "text": "Hola, ¿a qué hora abren?", "attachments": [],
+    "sender": { "id": "snd_1", "name": "Lucía", "phoneNumber": "+5491122334455" },
+    "sentAt": "2026-11-19T20:00:00Z", "isRead": false, "sentVia": null
+  },
+  "conversation": { "id": "conv_1" },
+  "account": { "id": "acc_1" },
+  "metadata": null,
+  "timestamp": "2026-11-19T20:00:00Z"
+}

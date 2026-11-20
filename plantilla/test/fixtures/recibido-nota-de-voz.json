@@ -1,0 +1,14 @@
+{
+  "id": "evt_voz_1",
+  "event": "message.received",
+  "message": {
+    "id": "msg_2", "conversationId": "conv_1", "platform": "whatsapp", "platformMessageId": "wamid.2",
+    "direction": "incoming", "text": null,
+    "attachments": [{ "type": "audio", "mimeType": "audio/ogg", "url": "https://zernio.com/api/v1/whatsapp/media/m_1", "payload": { "voice": true } }],
+    "sender": { "id": "snd_1", "phoneNumber": "+5491122334455" },
+    "sentAt": "2026-11-19T20:01:00Z", "isRead": false, "sentVia": null
+  },
+  "conversation": { "id": "conv_1" },
+  "account": { "id": "acc_1" },
+  "timestamp": "2026-11-19T20:01:00Z"
+}

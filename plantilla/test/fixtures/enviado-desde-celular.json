@@ -1,0 +1,13 @@
+{
+  "id": "evt_eco_1",
+  "event": "message.sent",
+  "message": {
+    "id": "msg_3", "conversationId": "conv_1", "platform": "whatsapp", "platformMessageId": "wamid.3",
+    "direction": "outgoing", "text": "Hola Lucía, te atiendo yo", "attachments": [],
+    "source": "whatsapp_business_app", "sentVia": null,
+    "sender": { "id": "acc_1" }, "sentAt": "2026-11-19T20:02:00Z", "isRead": false
+  },
+  "conversation": { "id": "conv_1" },
+  "account": { "id": "acc_1" },
+  "timestamp": "2026-11-19T20:02:00Z"
+}
