@@ -10,7 +10,7 @@
   "rules": [{ "type": "Text", "globs": ["**/*.md"], "fallthrough": true }],
   "vars": {
     "MODELO_TEXTO": "anthropic/claude-haiku-5.5",
-    "MODELO_AUDIO": "__MODELO_AUDIO__",
+    "MODELO_AUDIO": "google/gemini-3.8-flash",
     "HORAS_PAUSA": "12"
   }
 }

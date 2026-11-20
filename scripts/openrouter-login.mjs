@@ -31,9 +31,12 @@ const servidor = createServer(async (req, res) => {
   const url = new URL(req.url, "http://localhost");
   if (url.pathname !== "/callback") return res.writeHead(404).end();
   const code = url.searchParams.get("code");
+  console.log("Llegó la respuesta de OpenRouter.");
   if (!code) {
-    res.writeHead(400, { "Content-Type": "text/html; charset=utf-8" }).end(pagina("No se autorizó", "Volvé a la terminal y probá de nuevo."));
-    return terminar(1, "OpenRouter no devolvió el código. ¿Cancelaste la autorización?");
+    // Un pedido sin código no cierra el receptor: el usuario puede seguir autorizando.
+    res.writeHead(400, { "Content-Type": "text/html; charset=utf-8" }).end(pagina("No se autorizó", "Volvé a la pestaña de OpenRouter y tocá «Authorize»."));
+    if (url.searchParams.has("error")) terminar(1, "Cancelaste la autorización en OpenRouter. Volvé a correr el comando.");
+    return;
   }
   try {
     const r = await fetch("https://openrouter.ai/api/v1/auth/keys", {
