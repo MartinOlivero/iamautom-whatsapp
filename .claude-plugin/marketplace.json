@@ -6,7 +6,7 @@
     {
       "name": "iamautom-whatsapp",
       "source": "./",
-      "description": "Te entrevista, arma tu bot de WhatsApp con IA, lo prueba con vos y lo publica gratis en Cloudflare. Comandos /crear-bot y /actualizar-bot."
+      "description": "Te entrevista, arma tu bot de WhatsApp con IA, lo prueba contigo y lo publica gratis en Cloudflare. Comandos /crear-bot y /actualizar-bot."
     }
   ]
 }
