@@ -27,6 +27,13 @@ export function armarSistema(n: Negocio, conocimiento: string): string {
   ].join("\n");
 }
 
+// "a, b, c" = modelos de reserva: si el primero está saturado, OpenRouter prueba el siguiente.
+// Sirve sobre todo con los modelos gratuitos, que se saturan seguido. OpenRouter acepta hasta 3.
+function elegirModelo(texto: string): { model: string } | { models: string[] } {
+  const lista = texto.split(",").map((m) => m.trim()).filter(Boolean);
+  return lista.length > 1 ? { models: lista.slice(0, 3) } : { model: lista[0] };
+}
+
 async function preguntar(env: Env, modelo: string, messages: unknown[]): Promise<string> {
   const r = await fetch(URL_OPENROUTER, {
     method: "POST",
@@ -35,7 +42,7 @@ async function preguntar(env: Env, modelo: string, messages: unknown[]): Promise
       "Content-Type": "application/json",
       "X-Title": "iamautom-whatsapp",
     },
-    body: JSON.stringify({ model: modelo, messages }),
+    body: JSON.stringify({ ...elegirModelo(modelo), messages }),
   });
   if (!r.ok) throw new Error(`OpenRouter respondió ${r.status}: ${await r.text()}`);
   const datos: any = await r.json();

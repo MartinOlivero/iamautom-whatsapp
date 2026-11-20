@@ -77,3 +77,18 @@ describe("idioma", () => {
     expect(s).not.toMatch(/\b(Sos|Respondé|decí|tenés|ofrecé|empezá|avisale|Usá)\b/);
   });
 });
+
+describe("modelos de reserva", () => {
+  it("una lista separada por comas se manda como 'models' (OpenRouter prueba el siguiente si uno está saturado)", async () => {
+    const f = vi.spyOn(globalThis, "fetch").mockResolvedValue(ok("hola"));
+    await responder({ ...env, MODELO_TEXTO: "a/uno:free, b/dos:free,c/tres:free" }, "S", [], "hola");
+    const body = JSON.parse((f.mock.calls[0][1] as RequestInit).body as string);
+    expect(body.models).toEqual(["a/uno:free", "b/dos:free", "c/tres:free"]);
+    expect(body.model).toBeUndefined();
+  });
+  it("más de 3 modelos se recorta a 3 (límite de OpenRouter)", async () => {
+    const f = vi.spyOn(globalThis, "fetch").mockResolvedValue(ok("hola"));
+    await responder({ ...env, MODELO_TEXTO: "a,b,c,d" }, "S", [], "hola");
+    expect(JSON.parse((f.mock.calls[0][1] as RequestInit).body as string).models).toEqual(["a", "b", "c"]);
+  });
+});

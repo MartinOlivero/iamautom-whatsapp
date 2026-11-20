@@ -59,7 +59,7 @@ y pregúntale si falta algo. Si no tiene archivos, ármalo con lo que te cuente.
 5. Crea `BOT/.dev.vars` con:
    ```
    MODO=local
-   MODELO_TEXTO=google/gemma-4-31b-it:free
+   MODELO_TEXTO=google/gemma-4-31b-it:free,nvidia/nemotron-3.5-super-vl:free,inclusionai/ling-3.2-flash:free
    ```
    (el modelo gratuito es sólo para probar en la computadora).
 
@@ -92,7 +92,7 @@ Explica: "Ahora lo subimos a Cloudflare, que lo mantiene encendido las 24 horas,
 2. `npx wrangler d1 create <name>` → copia el `database_id` que imprime en `wrangler.jsonc`.
 3. `npx wrangler d1 migrations apply DB --remote`
 4. ¿Ya cargó crédito en OpenRouter? Si **no**, en `wrangler.jsonc` pon temporalmente
-   `"MODELO_TEXTO": "google/gemma-4-31b-it:free"` para la prueba del paso 7, y avísale que antes de atender
+   `"MODELO_TEXTO": "google/gemma-4-31b-it:free,nvidia/nemotron-3.5-super-vl:free,inclusionai/ling-3.2-flash:free"` para la prueba del paso 7, y avísale que antes de atender
    clientes reales hay que volver a `anthropic/claude-haiku-5.5` (más confiable) y cargar crédito.
 5. Todavía no lo publiques: falta la clave de Zernio (la publicación va en el paso 7).
 
